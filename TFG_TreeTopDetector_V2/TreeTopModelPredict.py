@@ -1,14 +1,17 @@
 from ultralytics import YOLO
+import os
+
 
 # Load a model
-model = YOLO('runs/detect/train/weights/best.onnx')  # load an official detection model
+model = YOLO('runs/detect/E-9/weights/best.onnx')  # load an official detection model
+
 
 results = model.predict(
-    source="Tree CountingBigDataSet/test/images/cr_261969_4_174260_4_19_jpg.rf.9ab089103682630f20f937472785d651.jpg", 
+    source="Tree Counting Original/test/images/test_10.jpg", 
+    show_conf = True,
     save = True,
-    save_crop = True, 
+    save_crop = False, 
     iou = 0.5,
     augment = True,
     show_labels = True,
-    show_conf = True, 
     save_txt = True)  # predict on an image

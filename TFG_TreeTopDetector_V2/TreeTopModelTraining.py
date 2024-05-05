@@ -1,21 +1,36 @@
 from ultralytics import YOLO
 import os
 
-# os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
+# model = YOLO("yolov8m.yaml")
 model = YOLO("yolov8n.yaml")
 
 
 model.train(
-    data = os.path.join(os.getcwd(), "Tree CountingBigDataSet/data.yaml"), 
-    epochs = 50, 
-    cache=True, 
+    data = os.path.join(os.getcwd(), "Tree Counting Original/data.yaml"),
+    epochs = 5,
+    batch = -1, 
     plots = True, 
-    overlap_mask = False, 
-    bgr = 0.5
+    overlap_mask = True,
+    workers=8,
+    #augmentation parameters
+    hsv_h = 0.2,
+    hsv_s = 0.2,
+    hsv_v = 0.2,
+    degrees = 0,
+    translate = 0.2,
+    scale = 0.5,
+    shear= 0,
+    perspective =0,
+    flipud = 0.2,
+    fliplr = 0.2,
+    bgr = 0.5,
+    mosaic = 0.5,
+    mixup = 0.5,
+    copy_paste = 0.2,
+    erasing = 0.4,
+    crop_fraction = 1
     )
-# model.train(data = 'coco128.yaml', epochs = 5)
+
 metrics = model.val()  # evaluate model performance on the validation set
-# results = model("./valid/images/sg_262074_4_174314_4_19_jpg.rf.11ec272790fe2e805ef93ee622615f76.jpg")  # predict on an image
 path = model.export(format="onnx")  # export the model to ONNX format
-# path = model.export(format="tflite", keras=True)  # export the model to ONNX format
