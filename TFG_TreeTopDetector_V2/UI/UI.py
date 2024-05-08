@@ -5,6 +5,7 @@ from ultralytics import YOLO
 import os
 import time
 import shutil
+import datetime
 
 WINDOW_WIDTH = 950
 WINDOW_HEIGHT  = 700
@@ -19,6 +20,7 @@ class TreeTopViewer():
     def __init__(self, main_window):
 
         self.flag_image = False
+        self.make_prediction = False
         self.main_window = main_window
         
         #defines the main window's title
@@ -76,12 +78,13 @@ class TreeTopViewer():
         self.warning_image = Label(self.results_paned, text='', background='#DDE6ED', foreground='yellow',font=("MontserratRoman", 14))
         self.warning_image.place(x=10, y=530)
 
+        self.btn_save = Button(self.results_paned, text= 'Guardar Resultado', command=self.save_image, background='#9DB2BF', foreground='black',font=('MontserratRoman', 12), width=21)
+        self.btn_save.place(x=10, y=520)
+        
         self.btn_upload = Button(self.results_paned, text= 'Cargar Imagen', command=self.load_image, background='#9DB2BF', foreground='black',font=('MontserratRoman', 12), width=21)
-        # self.btn_upload.pack(side=BOTTOM, pady=5)
         self.btn_upload.place(x=10, y=560)
 
         self.btn_proccess = Button(self.results_paned, text= 'Procesar Imagen', command=self.predict_image, background='#9DB2BF', foreground='black',font=('MontserratRoman', 12),width=21)
-        # self.btn_proccess.pack(side=BOTTOM, pady=5)
         self.btn_proccess.place(x=10, y=600)
 
 
@@ -103,8 +106,22 @@ class TreeTopViewer():
             self.flag_image = True
             if os.path.exists('runs'):
                 shutil.rmtree('runs')
+    def save_image(self):
+        if self.make_prediction:
+            time_now = datetime.datetime.now()
+            time_now = time_now.strftime("%Y-%m-%d--%H-%M-%S")
+            save_path = 'saves/predict-{}'.format(time_now)
+            try:
+                shutil.copytree('runs/detect/predict', save_path)
+                print("Contenido de la carpeta copiado correctamente.")
+            except shutil.Error as e:
+                print(f"Error al copiar la carpeta: {e}")
+            except OSError as e:
+                print("XXXXXXXXXXXX")
+                print(f"Error: {e.strerror}")
 
     def predict_image(self):
+        self.make_prediction = True
         if os.path.exists('runs'):
                 shutil.rmtree('runs')
         if self.flag_image:
