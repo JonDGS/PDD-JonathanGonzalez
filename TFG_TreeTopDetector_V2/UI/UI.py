@@ -7,13 +7,19 @@ import time
 import shutil
 import datetime
 
+CURRENT_DIR = os.getcwd()
+
 WINDOW_WIDTH = 950
 WINDOW_HEIGHT  = 700
 
-DEFAULT_IMAGE = 'miselaneos/deafult_image_bg.png'
-FOLDER_PATH = './runs/detect/predict'
-FOLDER_PATH_ORIGINAL = './../Tree Counting Original/test/labels/'
-MODEL = YOLO('modelos/best.onnx')  # load an official detection model
+DEFAULT_IMAGE = os.path.join(CURRENT_DIR, 'miselaneos/deafult_image_bg.png')
+FOLDER_PATH = os.path.join(CURRENT_DIR, 'runs/detect/predict/')
+FOLDER_PATH_ORIGINAL = os.path.join(CURRENT_DIR, 'test/labels/')
+MODEL = YOLO(os.path.join(CURRENT_DIR, 'modelos/best.onnx'))  # load an official detection model
+# DEFAULT_IMAGE = 'miselaneos/deafult_image_bg.png'
+# FOLDER_PATH = './runs/detect/predict'
+# FOLDER_PATH_ORIGINAL = './../Tree Counting Original/test/labels/'
+# MODEL = YOLO('modelos/best.onnx')  # load an official detection model
 
 class TreeTopViewer():
 
@@ -110,9 +116,9 @@ class TreeTopViewer():
         if self.make_prediction:
             time_now = datetime.datetime.now()
             time_now = time_now.strftime("%Y-%m-%d--%H-%M-%S")
-            save_path = 'saves/predict-{}'.format(time_now)
+            save_path = os.path.join(CURRENT_DIR, 'saves/predict-{}'.format(time_now))
             try:
-                shutil.copytree('runs/detect/predict', save_path)
+                shutil.copytree(os.path.join(CURRENT_DIR, 'runs/detect/predict'), save_path)
                 print("Contenido de la carpeta copiado correctamente.")
             except shutil.Error as e:
                 print(f"Error al copiar la carpeta: {e}")
@@ -122,8 +128,9 @@ class TreeTopViewer():
 
     def predict_image(self):
         self.make_prediction = True
-        if os.path.exists('runs'):
-                shutil.rmtree('runs')
+        self.runs_directory = os.path.join(CURRENT_DIR, 'runs')
+        if os.path.exists(self.runs_directory):
+                shutil.rmtree(self.runs_directory)
         if self.flag_image:
             self.warning_image.config(text="")
             self.results = MODEL.predict(
@@ -150,7 +157,7 @@ class TreeTopViewer():
                     img_path = os.path.join(FOLDER_PATH, filename)
     
 
-            # print('#########################\n')        
+            # print('#########################/n')        
             # print(img_path)        
             img = Image.open(img_path)
             img.thumbnail((640, 640))  # Resize the image to fit in the window

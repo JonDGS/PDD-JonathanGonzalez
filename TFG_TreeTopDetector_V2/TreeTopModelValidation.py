@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import os
 
 # Load a model
-model = YOLO('runs/detect/excel 6/weights/best.onnx')  # load an official detection model
+model = YOLO('runs/detect/E-9/weights/best.onnx')  # load an official detection model
 
 results = model.val(
     data = os.path.join(os.getcwd(), "Tree Counting Original/data.yaml"),

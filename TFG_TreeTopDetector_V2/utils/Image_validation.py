@@ -58,7 +58,8 @@ def draw_rectangle(image_name):
 
     image_path = './../Tree Counting Original/test/images/{}.jpg'.format(image_name)
     real_values_path = './../Tree Counting Original/test/labels/{}.txt'.format(image_name)
-    inferit_values_path = './../UI/runs/detect/predict/labels/{}.txt'.format(image_name)
+    # inferit_values_path = './../UI/runs/detect/predict/labels/{}.txt'.format(image_name)
+    inferit_values_path = './../runs/detect/p-test_{}/labels/{}.txt'.format(image_name.split("_")[1], image_name)
     image = cv2.imread(image_path)
 
     thickness=2
@@ -74,9 +75,10 @@ def draw_rectangle(image_name):
         cv2.rectangle(image, predicted_vertex1, predicted_vertex2, predicted_color, thickness)
 
     # Display the image with the rectangle
-    cv2.imshow('Image with Rectangle', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('Image with Rectangle', image)
+    cv2.imwrite('./validate_images/valitade_{}.png'.format(image_name), image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
-
-draw_rectangle('test_10')
+for i in range(1, 11):
+    draw_rectangle('test_{}'.format(i))
