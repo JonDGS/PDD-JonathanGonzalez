@@ -141,21 +141,21 @@ class TreeTopViewer():
                 augment = True,
                 show_labels = False,
                 show_conf = True, 
-                save_txt = True)  # predict on an image
-
-            try_number = 0
+                save_txt = True,
+                project = CURRENT_DIR + "/runs/detect")  # predict on an image
             
-            while(not os.path.exists(FOLDER_PATH)):
-                time.sleep(2)
-                if try_number > 10:
-                    print("No se ha creado la carpeta")
-                    break
-                try_number+=1
+            # while(not os.path.exists(FOLDER_PATH)):
+            #     time.sleep(2)
+            #     if try_number > 10:
+            #         print("No se ha creado la carpeta")
+            #         break
+            #     try_number+=1
                     
             for filename in os.listdir(FOLDER_PATH):
                 if filename.endswith(('.jpg')):
                     img_path = os.path.join(FOLDER_PATH, filename)
-    
+
+
 
             # print('#########################/n')        
             # print(img_path)        
