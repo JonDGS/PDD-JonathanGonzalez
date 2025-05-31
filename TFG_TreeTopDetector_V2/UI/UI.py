@@ -20,6 +20,8 @@ MODEL = YOLO(os.path.join(CURRENT_DIR, 'modelos/best.onnx'))  # load an official
 # FOLDER_PATH = './runs/detect/predict'
 # FOLDER_PATH_ORIGINAL = './../Tree Counting Original/test/labels/'
 # MODEL = YOLO('modelos/best.onnx')  # load an official detection model
+MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos')
+MODEL = None
 
 class TreeTopViewer():
 
@@ -63,23 +65,63 @@ class TreeTopViewer():
         self.results_paned = PanedWindow(main_window, height=640,  width=270, background='#DDE6ED')
         self.results_paned.place(x=665, y=10)
 
+        # --- Model Selection Dropdown ---
+        self.available_models = self.get_available_models()
+        self.selected_model_name = StringVar(self.main_window)
+
+        if self.available_models:
+            # Set initial selected model to 'best.onnx' if it exists, otherwise the first one
+            initial_model = 'best.onnx'
+            if initial_model in self.available_models:
+                self.selected_model_name.set(initial_model)
+            else:
+                self.selected_model_name.set(self.available_models[0])
+            self.update_model_selection(self.selected_model_name.get()) # Initialize global MODEL
+        else:
+            self.selected_model_name.set("No models found")
+            self.make_prediction = False # Prevent prediction if no model is found
+            print("Warning: No models found in 'modelos' directory.")
+
+
+        self.model_selector_label = Label(self.results_paned, text="Select Model:", background='#DDE6ED', font=("MontserratRoman", 10))
+        self.model_selector_label.place(x=10, y=10)
+
+        self.model_selector = OptionMenu(
+            self.results_paned, # Place it inside results_paned
+            self.selected_model_name,
+            *self.available_models,
+            command=self.update_model_selection
+        )
+        self.model_selector.config(bg='#9DB2BF', fg='black', font=('MontserratRoman', 10), width=15)
+        self.model_selector["menu"].config(bg='#DDE6ED', fg='black', font=('MontserratRoman', 10))
+        self.model_selector.place(x=5, y=5) # Position within results_paned
+
+        # Adjust existing elements' y-coordinates to make space for the dropdown
+        y_offset = 40
+
+        REAL_COUNT_PLACE_Y = 40
+        
         self.count_label_o = Label(self.results_paned, text='Total de Arboles Reales:', background='#DDE6ED', font=("MontserratRoman", 12))
-        self.count_label_o.place(x=10, y=10)
+        self.count_label_o.place(x=10, y=REAL_COUNT_PLACE_Y)
 
         self.count_text_box_o = Label(self.results_paned, text='', background='#DDE6ED', font=("MontserratRoman", 12))
-        self.count_text_box_o.place(x=200, y=10)
+        self.count_text_box_o.place(x=200, y=REAL_COUNT_PLACE_Y)
+
+        INF_COUNT_PLACE_Y = 60
         
         self.count_label = Label(self.results_paned, text='Total de Arboles Inferidos:', background='#DDE6ED', font=("MontserratRoman", 12))
-        self.count_label.place(x=10, y=30)
+        self.count_label.place(x=10, y=INF_COUNT_PLACE_Y)
 
         self.count_text_box = Label(self.results_paned, text='', background='#DDE6ED', font=("MontserratRoman", 12))
-        self.count_text_box.place(x=200, y=30)
+        self.count_text_box.place(x=200, y=INF_COUNT_PLACE_Y)
+
+        PRECISION_PLACE_Y = 100
         
         self.precision_label = Label(self.results_paned, text='Precisión:', background='#DDE6ED', font=("MontserratRoman", 12))
-        self.precision_label.place(x=10, y=70)
+        self.precision_label.place(x=10, y=PRECISION_PLACE_Y)
 
         self.precision_box = Label(self.results_paned, text='', background='#DDE6ED', font=("MontserratRoman", 12))
-        self.precision_box.place(x=200, y=70)
+        self.precision_box.place(x=200, y=PRECISION_PLACE_Y)
         
         self.warning_image = Label(self.results_paned, text='', background='#DDE6ED', foreground='yellow',font=("MontserratRoman", 14))
         self.warning_image.place(x=10, y=530)
@@ -93,7 +135,17 @@ class TreeTopViewer():
         self.btn_proccess = Button(self.results_paned, text= 'Procesar Imagen', command=self.predict_image, background='#9DB2BF', foreground='black',font=('MontserratRoman', 12),width=21)
         self.btn_proccess.place(x=10, y=600)
 
+    def get_available_models(self):
+        models = []
+        if os.path.exists(MODELS_DIR):
+            for filename in os.listdir(MODELS_DIR):
+                if filename.endswith('.onnx') and os.path.isfile(os.path.join(MODELS_DIR, filename)):
+                    models.append(filename)
+        return sorted(models)
 
+    def update_model_selection(self, selectedModel):
+        global MODEL
+        MODEL = YOLO(os.path.join(CURRENT_DIR, 'modelos/'+selectedModel))
 
     def load_image(self):
         self.file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg;*.gif")])
