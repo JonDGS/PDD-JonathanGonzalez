@@ -202,12 +202,48 @@ class TreeTopViewer():
             #         print("No se ha creado la carpeta")
             #         break
             #     try_number+=1
-                    
+            
+            image = Image.open(self.file_path)        
             for filename in os.listdir(FOLDER_PATH):
                 if filename.endswith(('.jpg')):
                     img_path = os.path.join(FOLDER_PATH, filename)
 
+            txt_folder_path = FOLDER_PATH+'/labels'
+            for filename in os.listdir(txt_folder_path):
+                if filename.endswith(('.txt')):
+                    txt_path = os.path.join(txt_folder_path, filename)
 
+            with open(txt_path, 'r') as f:
+                detections = [line.strip().split() for line in f]
+
+            # Crop and save each detected tree
+            output_folder = os.path.join(CURRENT_DIR, 'runs/crops')
+            os.makedirs(output_folder, exist_ok=True)
+            
+            height, width = image.size
+            for i, det in enumerate(detections):
+                class_id, x_center, y_center, w, h = map(float, det)
+                
+                box_width = w * width
+                box_height = h * height
+                x1 = int((x_center * width) - (box_width / 2))
+                y1 = int((y_center * height) - (box_height / 2))
+                x2 = int(x1 + box_width)
+                y2 = int(y1 + box_height)
+                
+                # Ensure coordinates are within image bounds
+                x1 = max(0, x1)
+                y1 = max(0, y1)
+                x2 = min(width, x2)
+                y2 = min(height, y2)
+                
+                # Crop the image
+                tree_crop = image.crop((x1, y1, x2, y2))
+                
+                # Save the cropped image
+                crop_filename = f'tree_{i}.png'
+                crop_path = os.path.join(output_folder, crop_filename)
+                tree_crop.save(crop_path)
 
             # print('#########################/n')        
             # print(img_path)        
