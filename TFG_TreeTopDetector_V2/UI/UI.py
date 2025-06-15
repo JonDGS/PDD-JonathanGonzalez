@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from ultralytics import YOLO
+from torchvision import transforms
 import os
 import time
 import shutil
@@ -30,6 +31,9 @@ class TreeTopViewer():
         self.flag_image = False
         self.make_prediction = False
         self.main_window = main_window
+
+        self.classification_model = YOLO(os.path.join(CURRENT_DIR, 'modelos/classify/best1.onnx'))  # Replace 'your_classification_model.pt' with the actual path to your classification model
+        self.tree_counts = {} # Dictionary to store counts for each tree class
         
         #defines the main window's title
         self.main_window.title("Tree Top Detector v.2")
@@ -221,6 +225,10 @@ class TreeTopViewer():
             os.makedirs(output_folder, exist_ok=True)
             
             height, width = image.size
+            
+            # Reset tree counts for each prediction
+            self.tree_counts = {}
+
             for i, det in enumerate(detections):
                 class_id, x_center, y_center, w, h = map(float, det)
                 
@@ -239,11 +247,22 @@ class TreeTopViewer():
                 
                 # Crop the image
                 tree_crop = image.crop((x1, y1, x2, y2))
+
+                results = self.classification_model.predict(source=tree_crop, verbose=False)
                 
-                # Save the cropped image
-                crop_filename = f'tree_{i}.png'
-                crop_path = os.path.join(output_folder, crop_filename)
-                tree_crop.save(crop_path)
+                
+                class_name = results[0].names[results[0].probs.argmax()].strip()  # Get the class name with highest probability
+                
+                # Update the tree counts
+                if class_name in self.tree_counts:
+                    self.tree_counts[class_name] += 1
+                else:
+                    self.tree_counts[class_name] = 1
+                
+                # # Save the cropped image - No longer needed
+                # crop_filename = f'tree_{i}.png'
+                # crop_path = os.path.join(output_folder, crop_filename)
+                # tree_crop.save(crop_path)
 
             # print('#########################/n')        
             # print(img_path)        
@@ -255,6 +274,10 @@ class TreeTopViewer():
             self.inferencias = self.tree_count()
             self.count_text_box.config(text=self.inferencias)
             self.precision_box.config(text=self.calculate_precision())
+
+            # Display the classification results
+            classification_text = "\n".join([f"{tree_type}: {count}" for tree_type, count in self.tree_counts.items()])
+            self.warning_image.config(text="Classification Results:\n" + classification_text)
         else:
             self.warning_image.config(text="NO SE HA SELECCIONADO LA IMAGEN")
          
