@@ -251,7 +251,7 @@ class TreeTopViewer():
                 results = self.classification_model.predict(source=tree_crop, verbose=False)
                 
                 
-                class_name = results[0].names[results[0].probs.argmax()].strip()  # Get the class name with highest probability
+                class_name = results[0].names[results[0].probs.top1].strip()  # Get the class name with highest probability
                 
                 # Update the tree counts
                 if class_name in self.tree_counts:
