@@ -130,6 +130,11 @@ class TreeTopViewer():
         self.warning_image = Label(self.results_paned, text='', background='#DDE6ED', foreground='yellow',font=("MontserratRoman", 14))
         self.warning_image.place(x=10, y=530)
 
+        CLASSIFICATION_RESULTS_PLACE_Y = 140 # Adjust as needed
+        self.classification_results_label = Label(self.results_paned, text='Resultados de Clasificación:\n', background='#DDE6ED', font=("MontserratRoman", 12), justify=LEFT)
+        self.classification_results_label.place(x=10, y=CLASSIFICATION_RESULTS_PLACE_Y)
+
+
         self.btn_save = Button(self.results_paned, text= 'Guardar Resultado', command=self.save_image, background='#9DB2BF', foreground='black',font=('MontserratRoman', 12), width=21)
         self.btn_save.place(x=10, y=520)
         
@@ -165,6 +170,8 @@ class TreeTopViewer():
             self.count_text_box_o.config(text=self.valor_real)
             self.count_text_box.config(text="")
             self.precision_box.config(text="")
+            self.classification_results_label.config(text="Resultados de Clasificación:\n") # Clear previous classification results
+            self.warning_image.config(text="") # Clear any previous warnings
             self.flag_image = True
             if os.path.exists('runs'):
                 shutil.rmtree('runs')
@@ -188,7 +195,8 @@ class TreeTopViewer():
         if os.path.exists(self.runs_directory):
                 shutil.rmtree(self.runs_directory)
         if self.flag_image:
-            self.warning_image.config(text="")
+            self.warning_image.config(text="") # Clear previous warnings
+            self.classification_results_label.config(text="Resultados de Clasificación:\n") # Clear previous results before displaying new ones
             self.results = MODEL.predict(
                 source=self.file_path, 
                 save = True,
@@ -275,9 +283,9 @@ class TreeTopViewer():
             self.count_text_box.config(text=self.inferencias)
             self.precision_box.config(text=self.calculate_precision())
 
-            # Display the classification results
-            classification_text = "\n".join([f"{tree_type}: {count}" for tree_type, count in self.tree_counts.items()])
-            self.warning_image.config(text="Classification Results:\n" + classification_text)
+            # Display the classification results in the new label
+            classification_text = "Resultados de Clasificación:\n" + "\n".join([f"{tree_type}: {count}" for tree_type, count in self.tree_counts.items()])
+            self.classification_results_label.config(text=classification_text)
         else:
             self.warning_image.config(text="NO SE HA SELECCIONADO LA IMAGEN")
          
