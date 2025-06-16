@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from ultralytics import YOLO
+from torchvision import transforms
 import os
 import time
 import shutil
@@ -30,6 +31,9 @@ class TreeTopViewer():
         self.flag_image = False
         self.make_prediction = False
         self.main_window = main_window
+
+        self.classification_model = YOLO(os.path.join(CURRENT_DIR, 'modelos/classify/best1.onnx'))  # Replace 'your_classification_model.pt' with the actual path to your classification model
+        self.tree_counts = {} # Dictionary to store counts for each tree class
         
         #defines the main window's title
         self.main_window.title("Tree Top Detector v.2")
@@ -126,6 +130,11 @@ class TreeTopViewer():
         self.warning_image = Label(self.results_paned, text='', background='#DDE6ED', foreground='yellow',font=("MontserratRoman", 14))
         self.warning_image.place(x=10, y=530)
 
+        CLASSIFICATION_RESULTS_PLACE_Y = 140 # Adjust as needed
+        self.classification_results_label = Label(self.results_paned, text='Resultados de Clasificación:\n', background='#DDE6ED', font=("MontserratRoman", 12), justify=LEFT)
+        self.classification_results_label.place(x=10, y=CLASSIFICATION_RESULTS_PLACE_Y)
+
+
         self.btn_save = Button(self.results_paned, text= 'Guardar Resultado', command=self.save_image, background='#9DB2BF', foreground='black',font=('MontserratRoman', 12), width=21)
         self.btn_save.place(x=10, y=520)
         
@@ -161,6 +170,8 @@ class TreeTopViewer():
             self.count_text_box_o.config(text=self.valor_real)
             self.count_text_box.config(text="")
             self.precision_box.config(text="")
+            self.classification_results_label.config(text="Resultados de Clasificación:\n") # Clear previous classification results
+            self.warning_image.config(text="") # Clear any previous warnings
             self.flag_image = True
             if os.path.exists('runs'):
                 shutil.rmtree('runs')
@@ -184,7 +195,8 @@ class TreeTopViewer():
         if os.path.exists(self.runs_directory):
                 shutil.rmtree(self.runs_directory)
         if self.flag_image:
-            self.warning_image.config(text="")
+            self.warning_image.config(text="") # Clear previous warnings
+            self.classification_results_label.config(text="Resultados de Clasificación:\n") # Clear previous results before displaying new ones
             self.results = MODEL.predict(
                 source=self.file_path, 
                 save = True,
@@ -202,12 +214,63 @@ class TreeTopViewer():
             #         print("No se ha creado la carpeta")
             #         break
             #     try_number+=1
-                    
+            
+            image = Image.open(self.file_path)        
             for filename in os.listdir(FOLDER_PATH):
                 if filename.endswith(('.jpg')):
                     img_path = os.path.join(FOLDER_PATH, filename)
 
+            txt_folder_path = FOLDER_PATH+'/labels'
+            for filename in os.listdir(txt_folder_path):
+                if filename.endswith(('.txt')):
+                    txt_path = os.path.join(txt_folder_path, filename)
 
+            with open(txt_path, 'r') as f:
+                detections = [line.strip().split() for line in f]
+
+            # Crop and save each detected tree
+            output_folder = os.path.join(CURRENT_DIR, 'runs/crops')
+            os.makedirs(output_folder, exist_ok=True)
+            
+            height, width = image.size
+            
+            # Reset tree counts for each prediction
+            self.tree_counts = {}
+
+            for i, det in enumerate(detections):
+                class_id, x_center, y_center, w, h = map(float, det)
+                
+                box_width = w * width
+                box_height = h * height
+                x1 = int((x_center * width) - (box_width / 2))
+                y1 = int((y_center * height) - (box_height / 2))
+                x2 = int(x1 + box_width)
+                y2 = int(y1 + box_height)
+                
+                # Ensure coordinates are within image bounds
+                x1 = max(0, x1)
+                y1 = max(0, y1)
+                x2 = min(width, x2)
+                y2 = min(height, y2)
+                
+                # Crop the image
+                tree_crop = image.crop((x1, y1, x2, y2))
+
+                results = self.classification_model.predict(source=tree_crop, verbose=False)
+                
+                
+                class_name = results[0].names[results[0].probs.top1].strip()  # Get the class name with highest probability
+                
+                # Update the tree counts
+                if class_name in self.tree_counts:
+                    self.tree_counts[class_name] += 1
+                else:
+                    self.tree_counts[class_name] = 1
+                
+                # # Save the cropped image - No longer needed
+                # crop_filename = f'tree_{i}.png'
+                # crop_path = os.path.join(output_folder, crop_filename)
+                # tree_crop.save(crop_path)
 
             # print('#########################/n')        
             # print(img_path)        
@@ -219,6 +282,10 @@ class TreeTopViewer():
             self.inferencias = self.tree_count()
             self.count_text_box.config(text=self.inferencias)
             self.precision_box.config(text=self.calculate_precision())
+
+            # Display the classification results in the new label
+            classification_text = "Resultados de Clasificación:\n" + "\n".join([f"{tree_type}: {count}" for tree_type, count in self.tree_counts.items()])
+            self.classification_results_label.config(text=classification_text)
         else:
             self.warning_image.config(text="NO SE HA SELECCIONADO LA IMAGEN")
          
