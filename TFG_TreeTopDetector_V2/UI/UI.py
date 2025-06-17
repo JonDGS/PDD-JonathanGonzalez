@@ -18,7 +18,7 @@ FOLDER_PATH = os.path.join(CURRENT_DIR, 'runs/detect/predict/')
 FOLDER_PATH_ORIGINAL = os.path.join(CURRENT_DIR, 'test/labels/')
 
 # Define model directories
-DETECTION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos')
+DETECTION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/detect')
 CLASSIFICATION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/classify')
 
 class TreeTopViewer():
