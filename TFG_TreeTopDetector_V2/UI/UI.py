@@ -35,7 +35,7 @@ class TreeTopViewer():
         self.tree_counts = {} # Dictionary to store counts for each tree class
         
         #defines the main window's title
-        self.main_window.title("Tree Top Detector v.2")
+        self.main_window.title("Tree Top Detector v.3")
 
         #defines the main window's size
         screen_width = self.main_window.winfo_screenwidth()
