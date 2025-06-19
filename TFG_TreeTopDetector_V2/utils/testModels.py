@@ -10,17 +10,19 @@ def benchmark_models(args):
     """
     Finds and benchmarks all .onnx models in a given folder for a specific task.
     """
-    # Validate paths
+    # --- FIX: Resolve the dataset path to an absolute path to avoid ambiguity ---
+    dataset_path = os.path.abspath(args.dataset)
+
+    # Validate paths using the new absolute path
     if not os.path.isdir(args.models_folder):
         print(f"❌ Error: Models folder not found at '{args.models_folder}'")
         return
 
-    dataset_path = args.dataset
     if args.task == 'detection' and not os.path.isfile(dataset_path):
-        print(f"❌ Error: Detection data.yaml not found at '{dataset_path}'")
+        print(f"❌ Error: Detection data.yaml not found at resolved path: '{dataset_path}'")
         return
     if args.task == 'classification' and not os.path.isdir(dataset_path):
-        print(f"❌ Error: Classification dataset folder not found at '{dataset_path}'")
+        print(f"❌ Error: Classification dataset folder not found at resolved path: '{dataset_path}'")
         return
 
     # Create output directory
@@ -46,6 +48,7 @@ def benchmark_models(args):
             model = YOLO(model_path)
             result_dict = {"model_name": model_name}
 
+            # --- Use the absolute dataset_path for validation ---
             if args.task == 'classification':
                 metrics = model.val(data=dataset_path, imgsz=args.imgsz)
                 result_dict['top1_accuracy'] = metrics.top1
@@ -71,6 +74,7 @@ def benchmark_models(args):
 
     # --- Process and Display Results ---
     df = pd.DataFrame(results_list).round(4)
+    # Sort by the primary performance metric (the second column)
     df = df.sort_values(by=df.columns[1], ascending=False).reset_index(drop=True)
 
     print("\n\n✅ Benchmarking Complete!")
