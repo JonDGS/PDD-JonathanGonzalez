@@ -60,6 +60,7 @@ def benchmark_models(args):
                 result_dict['mAP50'] = metrics.box.map50
                 result_dict['precision'] = metrics.box.mp
                 result_dict['recall'] = metrics.box.mr
+                result_dict['f1_score'] = metrics.box.f1[0] # F1 is a list, take the main score
             
             # Common metrics
             result_dict['inference_speed_ms'] = metrics.speed['inference']
@@ -84,29 +85,44 @@ def benchmark_models(args):
     # --- Generate and Save Plots ---
     print("\n--- Generating and Saving Plots ---")
 
-    # Main performance plot
     if args.task == 'classification':
+        # Main performance plot for classification
         y_metric = 'top1_accuracy'
         title = 'Top-1 Accuracy Comparison'
-    else:
-        y_metric = 'mAP50-95'
-        title = 'mAP50-95 Comparison'
+        fig_perf = px.bar(df, x='model_name', y=y_metric,
+                          title=title,
+                          labels={'model_name': 'Model', y_metric: y_metric},
+                          color='model_name', text_auto=True)
+        perf_path = os.path.join(args.output_dir, f"{args.task}_performance_comparison.png")
+        fig_perf.write_image(perf_path, width=1200, height=700)
+        print(f"Saved: {perf_path}")
 
-    fig_perf = px.bar(df, x='model_name', y=y_metric,
-                      title=title,
-                      labels={'model_name': 'Model', y_metric: y_metric},
-                      color='model_name', text_auto=True)
-    perf_path = os.path.join(args.output_dir, f"{args.task}_performance_comparison.png")
-    fig_perf.write_image(perf_path, width=1200, height=700)
-    print(f"Saved: {perf_path}")
+    elif args.task == 'detection':
+        # --- Generate multiple plots for detection ---
+        metrics_to_plot = {
+            'mAP50-95': 'mAP50-95 Comparison',
+            'mAP50': 'mAP50 Comparison',
+            'precision': 'Precision Comparison',
+            'recall': 'Recall Comparison',
+            'f1_score': 'F1-Score Comparison'
+        }
 
-    # Inference speed plot
+        for metric, title in metrics_to_plot.items():
+            fig = px.bar(df, x='model_name', y=metric,
+                         title=title,
+                         labels={'model_name': 'Model', metric: metric},
+                         color='model_name', text_auto=True)
+            plot_path = os.path.join(args.output_dir, f"detection_{metric}_comparison.png")
+            fig.write_image(plot_path, width=1200, height=700)
+            print(f"Saved: {plot_path}")
+
+    # Inference speed plot (for both tasks)
     df_speed_sorted = df.sort_values('inference_speed_ms', ascending=True)
     fig_speed = px.bar(df_speed_sorted, x='model_name', y='inference_speed_ms',
                        title='Inference Speed (ms) per Image',
                        labels={'model_name': 'Model', 'inference_speed_ms': 'Time (ms)'},
                        color='model_name', text_auto=True)
-    speed_path = os.path.join(args.output_dir, f"{args.task}_speed_comparison.png")
+    speed_path = os.path.join(args.output_dir, f"all_tasks_speed_comparison.png")
     fig_speed.write_image(speed_path, width=1200, height=700)
     print(f"Saved: {speed_path}")
 
