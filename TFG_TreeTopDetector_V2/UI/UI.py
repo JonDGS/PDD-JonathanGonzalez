@@ -65,7 +65,7 @@ class TreeTopViewer():
         self.selected_detection_model_name = StringVar(self.main_window)
 
         if self.available_detection_models:
-            initial_model = 'best4.onnx' 
+            initial_model = 'best3.onnx' 
             if initial_model in self.available_detection_models:
                 self.selected_detection_model_name.set(initial_model)
             else:
@@ -94,7 +94,7 @@ class TreeTopViewer():
         self.selected_classification_model_name = StringVar(self.main_window)
 
         if self.available_classification_models:
-            initial_cls_model = 'best1.onnx'
+            initial_cls_model = 'best3.onnx'
             if initial_cls_model in self.available_classification_models:
                 self.selected_classification_model_name.set(initial_cls_model)
             else:
@@ -184,7 +184,7 @@ class TreeTopViewer():
         print(f"Classification model set to: {selectedModel}")
 
     def load_image(self):
-        self.file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg;*.gif")])
+        self.file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif")])
         self.filename = self.file_path.split("/")[-1]
         print(self.filename)
         if self.file_path:
