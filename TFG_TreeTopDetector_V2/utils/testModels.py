@@ -75,11 +75,15 @@ def benchmark_models(args):
 
     # --- Process and Display Results ---
     df = pd.DataFrame(results_list).round(4)
-    # Sort by the primary performance metric (the second column)
-    df = df.sort_values(by=df.columns[1], ascending=False).reset_index(drop=True)
+
+    # --- NEW: Sort by model name numerically (best0, best1, best2...) ---
+    # This robustly handles sorting even if filenames are 'best10.onnx', etc.
+    df['sort_key'] = pd.to_numeric(df['model_name'].str.extract(r'(\d+)', expand=False), errors='coerce').fillna(float('inf'))
+    df = df.sort_values(by='sort_key', ascending=True).reset_index(drop=True)
+    df = df.drop(columns=['sort_key']) # Clean up the temporary column
 
     print("\n\n✅ Benchmarking Complete!")
-    print("\n--- Results Summary ---")
+    print("\n--- Results Summary (Sorted by Model Name) ---")
     print(df.to_string())
 
     # --- Generate and Save Plots ---
