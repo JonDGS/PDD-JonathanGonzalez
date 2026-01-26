@@ -3,16 +3,16 @@ import os
 
 
 # model = YOLO("yolov8m.yaml")
-model = YOLO("yolov8n.yaml")
+model = YOLO("yolo11n.pt")
 
 
 model.train(
-    data = os.path.join(os.getcwd(), "Tree Counting Original/data.yaml"),
-    epochs = 5,
+    data = os.path.join(os.getcwd(), "PDD-JonathanGonzalez/Tree Counting/data.yaml"),
+    epochs = 250,
     batch = -1, 
     plots = True, 
     overlap_mask = True,
-    workers=8,
+    workers=2,
     #augmentation parameters
     hsv_h = 0.2,
     hsv_s = 0.2,
@@ -29,7 +29,8 @@ model.train(
     mixup = 0.5,
     copy_paste = 0.2,
     erasing = 0.4,
-    crop_fraction = 1
+    crop_fraction = 1,
+    patience = 20
     )
 
 metrics = model.val()  # evaluate model performance on the validation set
