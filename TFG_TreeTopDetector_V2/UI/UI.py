@@ -18,6 +18,7 @@ FOLDER_PATH_ORIGINAL = os.path.join(CURRENT_DIR, 'test/labels/')
 # Define model directories
 DETECTION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/detect')
 CLASSIFICATION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/classify')
+TYPE_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/types')
 
 class TreeTopViewer():
 
@@ -28,6 +29,7 @@ class TreeTopViewer():
 
         self.detection_model = None 
         self.classification_model = None 
+        self.type_model = None
         self.last_output_dir = None # To store the latest prediction output directory
         
         self.tree_counts = {} 
@@ -115,9 +117,37 @@ class TreeTopViewer():
         )
         self.classification_model_selector.config(bg='#9DB2BF', fg='black', font=('MontserratRoman', 10), width=15)
         self.classification_model_selector["menu"].config(bg='#DDE6ED', fg='black', font=('MontserratRoman', 10))
-        self.classification_model_selector.place(x=135, y=25) 
+        self.classification_model_selector.place(x=135, y=25)
 
-        REAL_COUNT_PLACE_Y = 60
+        # --- Type Model Selection Dropdown ---
+        self.available_type_models = self.get_available_models(TYPE_MODELS_DIR)
+        self.selected_type_model_name = StringVar(self.main_window)
+
+        if self.available_type_models:
+            initial_type_model = 'best3.onnx'
+            if initial_type_model in self.available_type_models:
+                self.selected_type_model_name.set(initial_type_model)
+            else:
+                self.selected_type_model_name.set(self.available_type_models[0])
+            self.update_type_model_selection(self.selected_type_model_name.get()) 
+        else:
+            self.selected_type_model_name.set("No type models found")
+            print("Warning: No type models found in 'modelos/type' directory.")
+
+        self.type_model_selector_label = Label(self.results_paned, text="Type Model:", background='#DDE6ED', font=("MontserratRoman", 10))
+        self.type_model_selector_label.place(x=5, y=65) 
+
+        self.type_model_selector = OptionMenu(
+            self.results_paned,
+            self.selected_type_model_name,
+            *self.available_type_models,
+            command=self.update_type_model_selection
+        )
+        self.type_model_selector.config(bg='#9DB2BF', fg='black', font=('MontserratRoman', 10), width=15)
+        self.type_model_selector["menu"].config(bg='#DDE6ED', fg='black', font=('MontserratRoman', 10))
+        self.type_model_selector.place(x=5, y=85)
+
+        REAL_COUNT_PLACE_Y = 120
         
         self.count_label_o = Label(self.results_paned, text='Total de Arboles Reales:', background='#DDE6ED', font=("MontserratRoman", 12))
         self.count_label_o.place(x=10, y=REAL_COUNT_PLACE_Y)
@@ -125,7 +155,7 @@ class TreeTopViewer():
         self.count_text_box_o = Label(self.results_paned, text='', background='#DDE6ED', font=("MontserratRoman", 12))
         self.count_text_box_o.place(x=200, y=REAL_COUNT_PLACE_Y)
 
-        INF_COUNT_PLACE_Y = 80 
+        INF_COUNT_PLACE_Y = REAL_COUNT_PLACE_Y + 20 
         
         self.count_label = Label(self.results_paned, text='Total de Arboles Inferidos:', background='#DDE6ED', font=("MontserratRoman", 12))
         self.count_label.place(x=10, y=INF_COUNT_PLACE_Y)
@@ -133,7 +163,7 @@ class TreeTopViewer():
         self.count_text_box = Label(self.results_paned, text='', background='#DDE6ED', font=("MontserratRoman", 12))
         self.count_text_box.place(x=200, y=INF_COUNT_PLACE_Y)
 
-        PRECISION_PLACE_Y = 120 
+        PRECISION_PLACE_Y = INF_COUNT_PLACE_Y + 40 
         
         self.precision_label = Label(self.results_paned, text='Precisión:', background='#DDE6ED', font=("MontserratRoman", 12))
         self.precision_label.place(x=10, y=PRECISION_PLACE_Y)
@@ -182,6 +212,13 @@ class TreeTopViewer():
         """
         self.classification_model = YOLO(os.path.join(CLASSIFICATION_MODELS_DIR, selectedModel))
         print(f"Classification model set to: {selectedModel}")
+
+    def update_type_model_selection(self, selectedModel):
+        """
+        Updates the type model when a new one is selected from the dropdown.
+        """
+        self.classification_model = YOLO(os.path.join(TYPE_MODELS_DIR, selectedModel))
+        print(f"Type model set to: {selectedModel}")
 
     def load_image(self):
         self.file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif")])
