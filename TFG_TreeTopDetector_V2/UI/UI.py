@@ -6,6 +6,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from ultralytics import YOLO
+import numpy as np
 
 CURRENT_DIR = os.getcwd()
 
@@ -217,11 +218,11 @@ class TreeTopViewer():
         """
         Updates the type model when a new one is selected from the dropdown.
         """
-        self.classification_model = YOLO(os.path.join(TYPE_MODELS_DIR, selectedModel))
+        self.type_model = YOLO(os.path.join(TYPE_MODELS_DIR, selectedModel))
         print(f"Type model set to: {selectedModel}")
 
     def load_image(self):
-        self.file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif")])
+        self.file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.tif")])
         self.filename = self.file_path.split("/")[-1]
         print(self.filename)
         if self.file_path:
@@ -275,9 +276,15 @@ class TreeTopViewer():
         if not self.classification_model:
             self.warning_image.config(text="NO SE HA SELECCIONADO EL MODELO DE CLASIFICACIÓN")
             return
+        if not self.type_model:
+            self.warning_image.config(text="NO SE HA SELECCIONADO EL MODELO DE TIPOS")
+            return
 
         self.warning_image.config(text="") 
-        self.classification_results_label.config(text="Resultados de Clasificación:\n") 
+        self.classification_results_label.config(text="Resultados de Clasificación:\n")
+
+        #Run type model
+        self.results = self.type_model.predict(source=np.array(Image.open(self.file_path).convert("RGB")), imgsz=640)
         
         # Run detection model
         self.results = self.detection_model.predict(
