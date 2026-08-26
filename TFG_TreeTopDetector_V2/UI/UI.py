@@ -1,23 +1,35 @@
 import os
+import sys
 import time
 import shutil
 import datetime
+from pathlib import Path
 from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from ultralytics import YOLO
 
-CURRENT_DIR = os.getcwd()
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from tree_top_detector.inference import (
+    bounding_box_from_yolo,
+    count_label_rows,
+    count_ratio,
+)
+from tree_top_detector.paths import AppPaths
+
+APP_PATHS = AppPaths.from_ui_directory(Path(__file__).resolve().parent)
+CURRENT_DIR = str(APP_PATHS.ui_directory)
 
 WINDOW_WIDTH = 950
-WINDOW_HEIGHT  = 700
+WINDOW_HEIGHT = 700
 
-DEFAULT_IMAGE = os.path.join(CURRENT_DIR, 'miselaneos/default_image_bg.png')
-FOLDER_PATH_ORIGINAL = os.path.join(CURRENT_DIR, 'test/labels/')
+DEFAULT_IMAGE = str(APP_PATHS.default_image)
 
 # Define model directories
-DETECTION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/detect')
-CLASSIFICATION_MODELS_DIR = os.path.join(CURRENT_DIR, 'modelos/classify')
+DETECTION_MODELS_DIR = str(APP_PATHS.detection_models)
+CLASSIFICATION_MODELS_DIR = str(APP_PATHS.classification_models)
 
 class TreeTopViewer():
 
@@ -306,18 +318,14 @@ class TreeTopViewer():
             
             class_id, x_center, y_center, w, h = map(float, det[:5]) # Take only first 5 elements
 
-            box_width = w * width
-            box_height = h * height
-            x1 = int((x_center * width) - (box_width / 2))
-            y1 = int((y_center * height) - (box_height / 2))
-            x2 = int(x1 + box_width)
-            y2 = int(y1 + box_height)
-            
-            # Ensure coordinates are within image bounds
-            x1 = max(0, x1)
-            y1 = max(0, y1)
-            x2 = min(width, x2)
-            y2 = min(height, y2)
+            x1, y1, x2, y2 = bounding_box_from_yolo(
+                x_center=x_center,
+                y_center=y_center,
+                width=w,
+                height=h,
+                image_width=width,
+                image_height=height,
+            )
             
             # Crop the image
             tree_crop = original_image.crop((x1, y1, x2, y2))
@@ -363,21 +371,18 @@ class TreeTopViewer():
     #     return 0 
     
     def tree_count_original(self):
-        # Handle case where original labels might not exist for the loaded image
-        txt_path = FOLDER_PATH_ORIGINAL+self.filename.replace('.jpg', '.txt').replace('.jpeg', '.txt').replace('.png', '.txt') # Handle various image extensions
-        if os.path.exists(txt_path):
-            with open(txt_path, 'r') as f:
-                num_filas = sum(1 for linea in f)
-            return num_filas
-        else:
-            self.warning_image.config(text="NO SE ENCONTRARON ETIQUETAS ORIGINALES")
-            return "N/A" # Indicate that original count is not available
+        label_path = APP_PATHS.original_labels / Path(self.filename).with_suffix(".txt")
+        row_count = count_label_rows(label_path)
+        if row_count is not None:
+            return row_count
+
+        self.warning_image.config(text="NO SE ENCONTRARON ETIQUETAS ORIGINALES")
+        return "N/A"
     
     def calculate_precision(self):
-        if isinstance(self.valor_real, int) and self.valor_real > 0:
-            if self.inferencias is not None: # Ensure inferencias has a value
-                return f"{self.inferencias/self.valor_real:.2f}"
-        return "N/A" 
+        actual = self.valor_real if isinstance(self.valor_real, int) else None
+        ratio = count_ratio(self.inferencias, actual)
+        return f"{ratio:.2f}" if ratio is not None else "N/A"
 
 
 def main():
