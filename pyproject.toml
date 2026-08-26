@@ -1,11 +1,30 @@
 [project]
 name = "pdd-jonathangonzalez"
 version = "0.1.0"
-description = "Add your description here"
+description = "Desktop application for detecting, counting, and classifying treetops in aerial images"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "opencv-python>=4.13.0.92",
-    "tk>=0.1.0",
+    "pillow>=11.0",
     "ultralytics>=8.4.21",
 ]
+
+[project.optional-dependencies]
+analysis = [
+    "kaleido>=1.0",
+    "pandas>=2.2",
+    "plotly>=6.0",
+]
+build = [
+    "cx-freeze>=8.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
