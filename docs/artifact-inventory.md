@@ -4,6 +4,10 @@ Snapshot taken from the `Development` branch on 2026-08-26 before any artifact c
 
 No files listed here were removed during the foundation cleanup.
 
+## Current disposition
+
+The 17 selector models formerly under `TFG_TreeTopDetector_V2/UI/modelos/` are preserved byte-for-byte in the [`models-v1.0.0` GitHub Release](https://github.com/JonDGS/PDD-JonathanGonzalez/releases/tag/models-v1.0.0). Their release digests match `models/manifest.toml`, and `scripts/fetch_models.py` restores them to the original dropdown directories. Historical training outputs remain tracked pending a separate preservation decision. Existing Git history has not been rewritten.
+
 ## Summary
 
 - Tracked files: **346**

@@ -11,7 +11,7 @@ The Tkinter interface displays the annotated image, inferred tree count, optiona
 
 ## Project status
 
-This is a research project being restored after a period of inactivity. The current cleanup is intentionally non-destructive: existing models, training runs, plots, and test images remain in place. See [the artifact inventory](docs/artifact-inventory.md) for repository-size details and proposed follow-up.
+This is a research project being restored after a period of inactivity. Selectable ONNX models are preserved as versioned [GitHub Release assets](https://github.com/JonDGS/PDD-JonathanGonzalez/releases/tag/models-v1.0.0), while historical training runs, plots, and test images remain available for later review. See [the artifact inventory](docs/artifact-inventory.md) for the original repository-size snapshot and follow-up notes.
 
 ## Requirements
 
@@ -25,6 +25,23 @@ Tkinter is part of the Python standard library but is packaged separately by som
 
 ```bash
 uv sync
+uv run python scripts/fetch_models.py --all
+```
+
+The fetch command restores all 17 checksum-verified selector models from the `models-v1.0.0` GitHub Release. Existing files with the expected size and SHA-256 digest are reused. The hardened downloader currently requires POSIX descriptor-relative filesystem APIs (`dir_fd`, `O_NOFOLLOW`, and `O_DIRECTORY`), available on Linux and macOS. On Windows, download the release assets manually into the model directories until an equivalent reparse-point-safe implementation is added.
+
+To inspect or download a smaller subset:
+
+```bash
+# Show model IDs, tasks, sizes, and display names
+uv run python scripts/fetch_models.py --list
+
+# Download only one task
+uv run python scripts/fetch_models.py --task detection
+uv run python scripts/fetch_models.py --task classification
+
+# Download one or more named models
+uv run python scripts/fetch_models.py --model detection-best3
 ```
 
 The default environment contains the desktop application and test dependencies. Optional toolsets can be installed when needed:
@@ -59,7 +76,7 @@ Classification models are loaded from:
 TFG_TreeTopDetector_V2/UI/modelos/classify/
 ```
 
-Only `.onnx` files appear in the model selectors.
+Only `.onnx` files appear in the model selectors. Their filenames and local directories are unchanged after fetching, so the dropdown workflow remains the same.
 
 ## Tests
 
@@ -72,9 +89,11 @@ The initial suite covers the pure inference and path-resolution logic extracted 
 ## Repository layout
 
 ```text
-src/tree_top_detector/              Testable application helpers
+src/tree_top_detector/              Testable application and model-fetch helpers
 tests/                              Automated tests
-TFG_TreeTopDetector_V2/UI/          Tkinter application and runtime assets
+scripts/fetch_models.py             Checksum-verified model downloader
+models/manifest.toml                Versioned selector-model catalog
+TFG_TreeTopDetector_V2/UI/          Tkinter application and downloaded runtime assets
 TFG_TreeTopDetector_V2/utils/       Dataset and model-evaluation utilities
 TFG_TreeTopDetector_V2/runs/        Historical training outputs
 docs/artifact-inventory.md          Binary and generated-artifact inventory
@@ -97,5 +116,5 @@ uv run --extra analysis python TFG_TreeTopDetector_V2/utils/testModels.py --help
 - The GUI remains a single large Tkinter class and should be separated incrementally.
 - Training scripts contain environment-specific dataset paths.
 - Model inference is synchronous and can block the GUI while processing.
-- Historical generated outputs and model binaries make the Git repository unusually large.
+- Historical generated training outputs still make the Git repository unusually large; the selector models have moved to Release assets, but existing Git history has not been rewritten.
 - The displayed "precision" value is currently the inferred-count/ground-truth-count ratio, not an object-detection precision metric.
