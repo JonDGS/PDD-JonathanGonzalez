@@ -17,6 +17,7 @@ from tree_top_detector.inference import (
     count_label_rows,
     count_ratio,
 )
+from tree_top_detector.model_registry import selector_options
 from tree_top_detector.paths import AppPaths
 
 APP_PATHS = AppPaths.from_ui_directory(Path(__file__).resolve().parent)
@@ -88,18 +89,24 @@ class TreeTopViewer():
             self.make_prediction = False 
             print("Warning: No detection models found in 'modelos' directory.")
 
+        self.detection_selector_values = selector_options(
+            self.available_detection_models,
+            self.selected_detection_model_name.get(),
+        )
         self.detection_model_selector_label = Label(self.results_paned, text="Detection Model:", background='#DDE6ED', font=("MontserratRoman", 10))
         self.detection_model_selector_label.place(x=5, y=5)
 
         self.detection_model_selector = OptionMenu(
             self.results_paned,
             self.selected_detection_model_name,
-            *self.available_detection_models,
+            *self.detection_selector_values,
             command=self.update_detection_model_selection
         )
         self.detection_model_selector.config(bg='#9DB2BF', fg='black', font=('MontserratRoman', 10), width=15)
         self.detection_model_selector["menu"].config(bg='#DDE6ED', fg='black', font=('MontserratRoman', 10))
         self.detection_model_selector.place(x=5, y=25)
+        if not self.available_detection_models:
+            self.detection_model_selector.config(state=DISABLED)
 
         # --- Classification Model Selection Dropdown ---
         self.available_classification_models = self.get_available_models(CLASSIFICATION_MODELS_DIR)
@@ -116,18 +123,24 @@ class TreeTopViewer():
             self.selected_classification_model_name.set("No classification models found")
             print("Warning: No classification models found in 'modelos/classify' directory.")
 
+        self.classification_selector_values = selector_options(
+            self.available_classification_models,
+            self.selected_classification_model_name.get(),
+        )
         self.classification_model_selector_label = Label(self.results_paned, text="Classification Model:", background='#DDE6ED', font=("MontserratRoman", 10))
         self.classification_model_selector_label.place(x=135, y=5) 
 
         self.classification_model_selector = OptionMenu(
             self.results_paned,
             self.selected_classification_model_name,
-            *self.available_classification_models,
+            *self.classification_selector_values,
             command=self.update_classification_model_selection
         )
         self.classification_model_selector.config(bg='#9DB2BF', fg='black', font=('MontserratRoman', 10), width=15)
         self.classification_model_selector["menu"].config(bg='#DDE6ED', fg='black', font=('MontserratRoman', 10))
         self.classification_model_selector.place(x=135, y=25) 
+        if not self.available_classification_models:
+            self.classification_model_selector.config(state=DISABLED)
 
         REAL_COUNT_PLACE_Y = 60
         

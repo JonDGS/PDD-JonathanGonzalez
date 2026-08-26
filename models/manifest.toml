@@ -1,0 +1,231 @@
+# Selector models preserved as GitHub Release assets.
+# Regenerate only from checksum-verified source files.
+version = 1
+release_tag = "models-v1.0.0"
+base_url = "https://github.com/JonDGS/PDD-JonathanGonzalez/releases/download/models-v1.0.0"
+
+[[models]]
+id = "classification-best1"
+task = "classification"
+display_name = "Classification best1 (2025-06-15)"
+asset = "classification-best1.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/classify/best1.onnx"
+sha256 = "cbd715288268637c11dfe833274fa9ec8ecab8ab3e4db2d5a38f9296683ad2cf"
+size = 6167278
+created_at = "2025-06-15T08:54:14.878171"
+ultralytics_version = "8.3.155"
+image_size = 640
+classes = ["Unknown", "Unlabeled", "treeA", "treeB", "treeC"]
+
+[[models]]
+id = "classification-best2"
+task = "classification"
+display_name = "Classification best2 (2025-06-16)"
+asset = "classification-best2.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/classify/best2.onnx"
+sha256 = "95fdfc0138fcb19089b5003582f93b82a6fbcdb98e13b03d75b3f24e09a8ee16"
+size = 6167278
+created_at = "2025-06-16T18:10:03.896363"
+ultralytics_version = "8.3.155"
+image_size = 640
+classes = ["Unknown", "Unlabeled", "treeA", "treeB", "treeC"]
+
+[[models]]
+id = "classification-best3"
+task = "classification"
+display_name = "Classification best3 (2025-06-16)"
+asset = "classification-best3.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/classify/best3.onnx"
+sha256 = "c37c3fb2bae0b78748280151cc1620fa2066d2ffc59581d19106fafea549e896"
+size = 6156998
+created_at = "2025-06-16T21:19:40.300839"
+ultralytics_version = "8.3.155"
+image_size = 640
+classes = ["treeA", "treeB", "treeC"]
+
+[[models]]
+id = "classification-best4"
+task = "classification"
+display_name = "Classification best4 (2026-01-19)"
+asset = "classification-best4.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/classify/best4.onnx"
+sha256 = "22bcbccb6bfb17568eb867957817130fd331ac126c391c47c5533e84e1a5f29e"
+size = 6166236
+created_at = "2026-01-19T18:54:26.067161"
+ultralytics_version = "8.3.250"
+image_size = 640
+classes = ["treeA", "treeB", "treeC"]
+
+[[models]]
+id = "detection-best0"
+task = "detection"
+display_name = "Detection best0 (2025-04-29)"
+asset = "detection-best0.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best0.onnx"
+sha256 = "22efe0bbb722b053bbb95c0cf73f9455656fb3e92c91d30a1c14f077edab079f"
+size = 12251128
+created_at = "2025-04-29T12:53:55.126262"
+ultralytics_version = "8.3.119"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best1"
+task = "detection"
+display_name = "Detection best1 (2025-04-29)"
+asset = "detection-best1.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best1.onnx"
+sha256 = "95596b4b296ccae808bc346ea08d12fa92dbf7227335a2ffc9010d7d8b1bcfbc"
+size = 12251128
+created_at = "2025-04-29T17:14:49.855333"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best2"
+task = "detection"
+display_name = "Detection best2 (2025-04-29)"
+asset = "detection-best2.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best2.onnx"
+sha256 = "b39274a649a916c0de9d061825307409940ed60083280666f01f77057f50d92c"
+size = 12251128
+created_at = "2025-04-29T17:21:29.864444"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best3"
+task = "detection"
+display_name = "Detection best3 (2025-05-01)"
+asset = "detection-best3.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best3.onnx"
+sha256 = "eff10f0fd1396f5dd816bc3097e340b8d8738efb7869f092bb5c655196a67ecc"
+size = 12251128
+created_at = "2025-05-01T17:14:12.656248"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+source_run = "E-11"
+precision = 0.76851
+recall = 0.73195
+map50 = 0.76143
+map50_95 = 0.31817
+
+[[models]]
+id = "detection-best4"
+task = "detection"
+display_name = "Detection best4 (2025-05-02)"
+asset = "detection-best4.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best4.onnx"
+sha256 = "0d095328148f79deeadf482dc6495d39c5a3e61e3c47cb519211224346e3c502"
+size = 12251123
+created_at = "2025-05-02T18:37:42.429193"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best5"
+task = "detection"
+display_name = "Detection best5 (2025-05-03)"
+asset = "detection-best5.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best5.onnx"
+sha256 = "4da32c1f5b889c70eb2fb39d04471086e1b128fc586c119dfcafc01100f0437f"
+size = 12251123
+created_at = "2025-05-03T13:27:10.237168"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best6"
+task = "detection"
+display_name = "Detection best6 (2025-05-06)"
+asset = "detection-best6.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best6.onnx"
+sha256 = "30aa15cd136d2e289c6985ec321056e565c831c9e90f458d9c06044eb6d5a419"
+size = 12251123
+created_at = "2025-05-06T14:35:02.378642"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best7"
+task = "detection"
+display_name = "Detection best7 (2025-05-08)"
+asset = "detection-best7.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best7.onnx"
+sha256 = "9f5c63f1883fee04a25256585a5bce8ac1836ad79d0be54c6f44b879f1a037a8"
+size = 12251123
+created_at = "2025-05-08T12:11:23.071769"
+ultralytics_version = "8.3.121"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best8"
+task = "detection"
+display_name = "Detection best8 (2025-06-16)"
+asset = "detection-best8.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best8.onnx"
+sha256 = "5473351d3af586ca78b3ef3f646dc791d06614e7989e3fc30fb23bacb3244b99"
+size = 12251123
+created_at = "2025-06-16T18:37:06.594537"
+ultralytics_version = "8.3.155"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best9"
+task = "detection"
+display_name = "Detection best9 (2025-06-16)"
+asset = "detection-best9.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best9.onnx"
+sha256 = "4f8dc9e4e203cc608e067c37c1c68e3c3a2c1ae9fd006b30161f577ea3176adf"
+size = 10584180
+created_at = "2025-06-16T21:42:09.166583"
+ultralytics_version = "8.3.155"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best10"
+task = "detection"
+display_name = "Detection best10 (2025-06-19)"
+asset = "detection-best10.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best10.onnx"
+sha256 = "60eab9c26a043431f53c68a19d1a03c37a45e4ce31aeae6f7e247cdd7bc9ca91"
+size = 44732225
+created_at = "2025-06-19T17:58:16.707436"
+ultralytics_version = "8.3.156"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best11"
+task = "detection"
+display_name = "Detection best11 (2025-06-19)"
+asset = "detection-best11.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best11.onnx"
+sha256 = "acb5a5055ffa93e3faa009b8317a71d643e5f486a0753838e7b0a6567c221129"
+size = 12251706
+created_at = "2025-06-19T18:20:40.709285"
+ultralytics_version = "8.3.156"
+image_size = 640
+classes = ["tree"]
+
+[[models]]
+id = "detection-best12"
+task = "detection"
+display_name = "Detection best12 (2025-06-19)"
+asset = "detection-best12.onnx"
+target = "TFG_TreeTopDetector_V2/UI/modelos/detect/best12.onnx"
+sha256 = "ec3a57d8822847bc95405ad7c0ac1baeac64356a20f6debe053597e065f7203b"
+size = 12251709
+created_at = "2025-06-19T18:32:27.634326"
+ultralytics_version = "8.3.156"
+image_size = 640
+classes = ["tree"]
